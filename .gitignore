@@ -1,0 +1,12 @@
+.DS_Store
+build
+xcproj
+Testing
+reference
+
+*.swp
+
+*.wav
+*.aiff
+
+compile_commands.json
