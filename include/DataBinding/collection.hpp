@@ -8,11 +8,12 @@
 
 namespace model {
 
-template <typename T>
-class ValueWrapper<std::vector<T>> : public ModelValue<std::vector<T>> {
+template <typename T, typename Allocator>
+class ValueWrapper<std::vector<T, Allocator>>
+        : public ModelValue<std::vector<T, Allocator>> {
     using model_type = std::vector<std::unique_ptr<ValueWrapper<T>>>;
 
-    model_type generate_t(const std::vector<T>& t) {
+    model_type generate_t(const std::vector<T, Allocator>& t) {
         model_type ret;
         ret.reserve(t.size());
         for (const auto& i : t) {
@@ -22,13 +23,13 @@ class ValueWrapper<std::vector<T>> : public ModelValue<std::vector<T>> {
     }
 
 public:
-    ValueWrapper(ModelMember* owner, const std::vector<T>& t)
-            : ModelValue<std::vector<T>>(owner)
+    ValueWrapper(ModelMember* owner, const std::vector<T, Allocator>& t)
+            : ModelValue<std::vector<T, Allocator>>(owner)
             , t(generate_t(t)) {
     }
 
-    std::vector<T> get() const override {
-        std::vector<T> ret;
+    std::vector<T, Allocator> get() const override {
+        std::vector<T, Allocator> ret;
         ret.reserve(t.size());
         for (const auto& i : t) {
             ret.push_back(i->get());
@@ -36,7 +37,7 @@ public:
         return ret;
     }
 
-    void set(const std::vector<T>& u, bool do_notify = true) override {
+    void set(const std::vector<T, Allocator>& u, bool do_notify = true) override {
         t = generate_t(u);
         if (do_notify) {
             this->broadcast();
